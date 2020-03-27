@@ -1,3 +1,2 @@
-# 100DaysOfSwift
- 
-My attempt at trying to learn swift, shoutout to HackingWithSwift.com
+# HackingWithSwift
+Following Paul Hudson's Hacking With Swift programs to learn iOS development
