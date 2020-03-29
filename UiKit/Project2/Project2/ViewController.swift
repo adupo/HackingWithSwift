@@ -14,11 +14,12 @@ class ViewController: UIViewController {
     @IBOutlet var Button3: UIButton!
     
     var countries = [String]()
-    var scores = 0
+    var score = 0
+    var correctAnswer = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        countries += ["estonia", "france", "germany", "ireland", "italy", "monaco", "nigeria", "poland", "russia", "sapin", "uk", "us"]
+        countries += ["estonia", "france", "germany", "ireland", "italy", "monaco", "nigeria", "poland", "russia", "spain", "uk", "us"]
         
         Button1.layer.borderWidth = 1
         Button2.layer.borderWidth = 1
@@ -30,10 +31,31 @@ class ViewController: UIViewController {
         askQuestion()
     }
 
-    func askQuestion() {
+    func askQuestion(action: UIAlertAction! = nil) {
+        countries.shuffle()
+        correctAnswer = Int.random(in: 0...2)
+        
         Button1.setImage(UIImage(named: countries[0]), for: .normal)
         Button2.setImage(UIImage(named: countries[1]), for: .normal)
         Button3.setImage(UIImage(named: countries[2]), for: .normal)
+        
+        title = countries[correctAnswer].uppercased()
+    }
+    
+    @IBAction func buttonTapped(_ sender: UIButton) {
+        var title: String
+        
+        if sender.tag == correctAnswer {
+            title = "Corrrect!"
+            score += 1
+        } else {
+            title = "Wrongo :("
+            score -= 1
+        }
+        
+        let ac = UIAlertController(title: title, message: "Your score is now \(score)", preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "Continue", style: .default, handler: askQuestion))
+        present(ac, animated: true)
     }
     
 }
