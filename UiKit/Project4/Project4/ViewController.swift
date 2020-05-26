@@ -13,7 +13,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
 
     var webView: WKWebView!
     var progressView: UIProgressView!
-    var websites = ["Apple.com", "google.com", "twitter.com"]
+    var websites = ["apple.com", "google.com", "twitter.com"]
 
     override func loadView() {
         webView = WKWebView()
@@ -26,6 +26,9 @@ class ViewController: UIViewController, WKNavigationDelegate {
         // Do any additional setup after loading the view.
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Open", style: .plain, target: self, action: #selector(openTapped))
+        let backButton = UIBarButtonItem(image: UIImage(systemName: "arrowtriangle.left.fill"), style: .plain, target: self, action: #selector(backTapped))
+        let forwardButton = UIBarButtonItem(image: UIImage(systemName: "arrowtriangle.right.fill"), style: .plain, target: self, action: #selector(forwardTapped))
+        navigationItem.leftBarButtonItems = [backButton, forwardButton]
         
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let refresh = UIBarButtonItem(barButtonSystemItem: .refresh, target: webView, action: #selector(webView.reload))
@@ -50,6 +53,14 @@ class ViewController: UIViewController, WKNavigationDelegate {
         if keyPath == "estimatedProgress" {
             progressView.progress = Float(webView.estimatedProgress)
         }
+    }
+    
+    @objc func backTapped() {
+        webView.goBack()
+    }
+    
+    @objc func forwardTapped() {
+        webView.goForward()
     }
 
     @objc func openTapped() {
@@ -80,9 +91,19 @@ class ViewController: UIViewController, WKNavigationDelegate {
         if let host = url?.host {
             for website in websites {
                 if host.contains(website) {
+                    if let path = url?.path {
+                        if path != "/" { //if anywhere other than the base path then block access
+                            let ac = UIAlertController(title: "Access blocked", message: "You cannot visit this page.", preferredStyle: .alert)
+                            ac.addAction(UIAlertAction(title: "Candel", style: .cancel))
+                            present(ac, animated: true)
+                            decisionHandler(.cancel)
+                            return
+                        }
+                    }
                     decisionHandler(.allow)
                     return
                 }
+                
             }
         }
         
