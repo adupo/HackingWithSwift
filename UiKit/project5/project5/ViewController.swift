@@ -17,6 +17,7 @@ class ViewController: UITableViewController {
         super.viewDidLoad()
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(promptForAnswer))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(startGame))
         
         if let startWordsUrl = Bundle.main.url(forResource: "start", withExtension: "txt") {
             if let startWords = try? String(contentsOf: startWordsUrl) {
@@ -30,7 +31,7 @@ class ViewController: UITableViewController {
         startGame()
     }
     
-    func startGame() {
+    @objc func startGame() {
         title = allWords.randomElement()
         usedWords.removeAll(keepingCapacity: true)
         tableView.reloadData()
@@ -62,7 +63,7 @@ class ViewController: UITableViewController {
     func submit(_ answer: String) {
         let lowerAnswer = answer.lowercased()
         if isPossible(word: lowerAnswer) && isOrigional(word: lowerAnswer) && isReal(word: lowerAnswer) {
-            usedWords.insert(answer, at: 0)
+            usedWords.insert(lowerAnswer, at: 0)
             let indexPath = IndexPath(row: 0, section: 0)
             tableView.insertRows(at: [indexPath], with: .automatic)
         } else {
@@ -75,6 +76,12 @@ class ViewController: UITableViewController {
     
     func isPossible(word: String) -> Bool {
         guard var tempWord = title?.lowercased() else { return false }
+        
+        
+        if word.count < 3 || word == tempWord {
+            return false
+        }
+        
 
         for letter in word {
             if let position = tempWord.firstIndex(of: letter) {
