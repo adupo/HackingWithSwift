@@ -15,6 +15,12 @@ class ViewController: UITableViewController {
         super.viewDidLoad()
         title = "Storm Viewer"
         navigationController?.navigationBar.prefersLargeTitles = true
+//        loadImageTitles()
+        performSelector(inBackground: #selector(loadImageTitles), with: nil)
+        tableView.reloadData()
+    }
+    
+    @objc func loadImageTitles() {
         let fm = FileManager.default
         let path = Bundle.main.resourcePath!
         let items = try! fm.contentsOfDirectory(atPath: path)

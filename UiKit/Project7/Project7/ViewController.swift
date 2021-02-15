@@ -46,13 +46,14 @@ class ViewController: UITableViewController {
         ac.addAction(UIAlertAction(title: "Filter", style: .default) {
             [weak self, weak ac] action in
             guard let filterText = ac?.textFields?[0].text else {return}
-            self?.filterPetitions(for: filterText)
+            self?.performSelector(inBackground: #selector(self?.filterPetitions), with: filterText)
+//            self?.filterPetitions(for: filterText)
         })
         
         present(ac, animated: true)
     }
     
-    func filterPetitions(for filterText: String) {
+    @objc func filterPetitions(for filterText: String) {
         var tempPetitionList = [Petition]()
         for petition in petitions {
             if petition.title.lowercased().contains(filterText) || petition.body.lowercased().contains(filterText) {
@@ -61,7 +62,10 @@ class ViewController: UITableViewController {
         }
         filteredPetitions = tempPetitionList
         print("Petition count: \(petitions.count); filtered count \(filteredPetitions.count)")
-        tableView.reloadData()
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+//        tableView.reloadData()
     }
     
     @objc func creditAlert() {
