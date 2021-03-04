@@ -8,41 +8,56 @@
 import UIKit
 
 class ViewController: UIViewController {
+    @IBOutlet var usedLetters: UILabel!
     
-    let word = "technical"
-    var usedLetters = ""
-    var guessedWord = "" {
+    let answerWord = "technical" //the answer
+    var usedLettersString = "" {
+        didSet {
+            usedLetters.text = usedLettersString
+        }
+    }
+    var guessedWord = "" { //the display to the user
         didSet {
             title = guessedWord
         }
     }
+    var wrongGuesses = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(guessLetterPrompt))
         
-        guessedWord = String.init(repeating: "?", count: word.count)
+        guessedWord = String.init(repeating: "?", count: answerWord.count)
         
         
     }
     
     func guessFor(_ letter: Character) {
-        for letter in word {
-            if usedLetters.contains(letter) {
-                guessedWord.append(String(letter))
+        guessedWord = ""
+        usedLettersString.append(letter)
+        
+        for char in answerWord {
+            if usedLettersString.contains(char) {
+                guessedWord.append(String(char))
             } else {
                 guessedWord.append("?")
             }
         }
     }
     
+    
     @objc func guessLetterPrompt() {
         let ac = UIAlertController(title: "Guess one letter", message: nil, preferredStyle: .alert)
         ac.addTextField()
+        
         let submit = UIAlertAction(title: "Submit", style: .default) { [weak self, weak ac] action in
             guard let letter = ac?.textFields?[0].text else { return }
-            self?.guessFor(letter)
+            if letter.count > 1 {
+                return
+            } else {
+                self?.guessFor(Character(letter))
+            }
         }
         ac.addAction(submit)
         present(ac, animated: true)
